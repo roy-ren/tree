@@ -31,8 +31,8 @@ public protocol FolderElementProtocol: Identifiable, Equatable {
     /// 数据
     var element: Self.Element { get }
     
-    /// 层级深度：对应数的深度
-    var level: Int { get }
+//    /// 层级深度：对应树的深度
+//    var level: Int { get }
     
     /// 父节点的 id
     var superIdentifier: ID? { get }
@@ -46,11 +46,9 @@ public protocol FolderElementProtocol: Identifiable, Equatable {
 
 public struct Folder<Element: FolderElementProtocol> {
     typealias Node = BinaryNode<Element>
-    private let root: Node
+    let root: Node
     
     init(elements: [Element]) {
-        var root = Node()
-        
         let group = Dictionary(
             grouping: elements,
             by: { $0.superIdentifier }
@@ -60,34 +58,59 @@ public struct Folder<Element: FolderElementProtocol> {
             self.root = .init()
             return
         }
-        
-        func insertSameLevel(element new: Element, to node: Node) -> Node {
-            var node = node
-            while case let .node(_, data, right) = node {
-                if data.rank <= new.rank {
-                    if case let .node(_, rightData, nextRight) = right {
-                        if 
-                        
-                    } else {
-                        try! node.update(right: .init(element: new))
-                    }
-                } else {
-                    
-                }
-            }
-        }
-        
-        var firstNode: Node
-        firstLevelItems.enumerated().forEach { (offset, element) in
-            if 0 == offset {
-                firstNode = Node(element: element)
-            } else if let firstElement = firstNode.data {
-                while <#condition#> {
-                    <#code#>
-                }
-            }
-        }
-        
-        self.root = root
+
+		var stack = Stack<Element>()
+
+		func push(items: [Element]) {
+			items
+				.sorted { $0.rank < $1.rank }
+				.forEach { stack.push(item: $0) }
+		}
+
+		var leftNodeStack = Stack<Node>()
+		var rightNodeStack = Stack<Node>()
+
+		push(items: firstLevelItems)
+
+		func construct(element: Element) -> Node {
+			var left = Node()
+			if let top = leftNodeStack.top, top.data?.superIdentifier == element.id {
+				leftNodeStack.pop()
+				left = top
+			}
+
+			var right = Node()
+			if let top = rightNodeStack.top, top.data?.superIdentifier == element.superIdentifier {
+				rightNodeStack.pop()
+				right = top
+			}
+
+			return .node(left: left, element: element, right: right)
+		}
+
+		var root = Node()
+
+		while let top = stack.top {
+			if leftNodeStack.top?.data?.superIdentifier != top.id, let items = group[top.id] {
+				push(items: items)
+				continue
+			}
+
+			stack.pop()
+
+			let node = construct(element: top)
+			guard let currentTop = stack.top else {
+				root = node
+				break
+			}
+
+			if top.superIdentifier == currentTop.id {
+				leftNodeStack.push(item: node)
+			} else if top.superIdentifier == currentTop.superIdentifier {
+				rightNodeStack.push(item: node)
+			}
+		}
+
+		self.root = root
     }
 }

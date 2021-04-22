@@ -68,4 +68,3 @@ final class BinaryNodeTests: XCTestCase {
         XCTAssertThrowsError(try first.update(right: right))
     }
 }
-
