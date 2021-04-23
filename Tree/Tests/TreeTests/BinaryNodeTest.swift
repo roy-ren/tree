@@ -39,6 +39,17 @@ final class BinaryNodeTests: XCTestCase {
         XCTAssertNotEqual(tree1, tree2)
         XCTAssertEqual(tree2.elements, [2, 3, 1])
         XCTAssertEqual(tree1.left.elements, [1])
+        
+        // depth
+        XCTAssertEqual(one.depth, 1)
+        XCTAssertEqual(tree1.depth, 2)
+        XCTAssertEqual(tree11.depth, 2)
+        
+        let tree3 = BinaryNode.node(left: tree1, element: 3, right: tree2)
+        let tree4 = BinaryNode.node(left: tree2, element: 4, right: tree3)
+        let tree5 = BinaryNode.node(left: tree11, element: 5, right: tree4)
+        
+        XCTAssertEqual(tree5.depth, 5)
     }
     
     func test_binaryNode_update() {

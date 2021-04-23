@@ -1,37 +1,21 @@
 import UIKit
 import Tree
 
-var str = "Hello, playground"
+let one = BinaryNode(element: 1)
+let two = BinaryNode(element: 2)
 
-print(Tree().text)
+//print(one.treeDescription())
 
-indirect enum BinarySearchTree<Element: Comparable> {
-    case leaf
-    case node(BinarySearchTree<Element>,
-              Element,
-              BinarySearchTree<Element>)
-}
+let tree1 = BinaryNode.node(left: one, element: 101, right: two)
+let tree2 = BinaryNode.node(left: two, element: 102, right: one)
 
-extension BinarySearchTree {
-    func reduce<A>(leaf leafF: A, node nodeF: (A, Element, A) -> A) -> A {
-        switch self {
-        case .leaf:
-            return leafF
-        case let .node(left, x, right):
-            return nodeF(
-                left.reduce(leaf: leafF, node: nodeF),
-                x,
-                right.reduce(leaf: leafF, node: nodeF)
-            )
-        }
-    }
-}
 
-extension BinarySearchTree {
-    var elementsR: [Element] {
-        return reduce(leaf: []) { $0 + [$1] + $2 }
-    }
-    var countR: Int {
-        return reduce(leaf: 0) { 1 + $0 + $2 }
-    }
-}
+let tree3 = BinaryNode.node(left: tree1, element: 103, right: tree2)
+let tree4 = BinaryNode.node(left: tree1, element: 104, right: tree3)
+let tree5 = BinaryNode.node(left: tree1, element: 105, right: tree4)
+
+print(tree3.depth)
+//print(tree5.depth)
+print(tree3.treeDescription())
+print(tree4.treeDescription())
+//print(tree5.treeDescription())

@@ -44,11 +44,28 @@ public protocol FolderElementProtocol: Identifiable, Equatable {
     var state: FolderState { get }
 }
 
+public enum FolderConfigElement<Element: FolderElementProtocol> {
+    case normal(Element)
+    case folder(Element)
+    
+    public var element: Element {
+        switch self {
+        case .normal(let element):
+            return element
+        case .folder(let element):
+            return element
+        }
+    }
+}
+
 public struct Folder<Element: FolderElementProtocol> {
     typealias Node = BinaryNode<Element>
-    let root: Node
+    private(set) var root: Node
+    private(set) var sections = [Section]()
     
-    init(elements: [Element]) {
+    var numberOfSections: Int { sections.count }
+    
+    public init(elements: [Element] = []) {
         let group = Dictionary(
             grouping: elements,
             by: { $0.superIdentifier }
@@ -112,5 +129,34 @@ public struct Folder<Element: FolderElementProtocol> {
 		}
 
 		self.root = root
+    }
+}
+
+public extension Folder {
+    struct Section {
+        let item: Element
+        let subItems: [Element]
+        
+        var numberOfRows: Int {
+            subItems.count
+        }
+    }
+    
+    func element(forRowAt indexPath: IndexPath) -> Element {
+        sections[indexPath.section].subItems[indexPath.row]
+    }
+    
+    func element(for section: Int) -> Element {
+        sections[section].item
+    }
+    
+    func constructTableDataSource() {
+        var sections = [Section]()
+        
+        func construct(node: Node) {
+            
+        }
+        
+        self.sections = sections
     }
 }
