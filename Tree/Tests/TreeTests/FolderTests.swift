@@ -331,4 +331,50 @@ final class FolderTests: XCTestCase {
 
 		XCTAssertEqual(folder.sections, sections)
 	}
+
+	func test_toggle_section() {
+		let stringElements: [MockStringElement] = [
+			.init(id: "a", element: "A", superIdentifier: nil, rank: 0), // 0
+			.init(id: "b", element: "B", superIdentifier: nil, rank: 1), // 1
+			.init(id: "c", element: "C", superIdentifier: nil, rank: 2), // 2
+			.init(id: "d", element: "D", superIdentifier: "a", rank: 0), // 3
+			.init(id: "e", element: "E", superIdentifier: "a", rank: 1), // 4
+			.init(id: "f", element: "F", superIdentifier: "b", rank: 0), // 5
+			.init(id: "g", element: "G", superIdentifier: "c", rank: 0), // 6
+			.init(id: "h", element: "H", superIdentifier: "c", rank: 1), // 7
+			.init(id: "i", element: "I", superIdentifier: "f", rank: 0), // 8
+			.init(id: "j", element: "J", superIdentifier: "f", rank: 1), // 9
+		]
+
+		typealias StringFolder = Folder<MockStringElement>
+		var folder = StringFolder(elements: stringElements)
+
+		typealias Section = StringFolder.Section
+
+		let items = folder.root
+			.elements
+			.sorted {
+				$0.element.element < $1.element.element
+			}
+
+		let sections = [
+			Section(item: items[0], subItems: [items[3], items[4]]),
+			Section(item: items[1]),
+			Section(item: items[5], subItems: [items[8], items[9]]),
+			Section(item: items[2], subItems: [items[6], items[7]]),
+		]
+
+		XCTAssertEqual(folder.sections, sections)
+
+		folder.toggle(section: 1)
+
+		let sections1 = [
+			Section(item: items[0], subItems: [items[3], items[4], items[1]]),
+//			Section(item: items[1]),
+//			Section(item: items[5], subItems: [items[8], items[9]]),
+			Section(item: items[2], subItems: [items[6], items[7]]),
+		]
+
+		XCTAssertEqual(folder.sections, sections1)
+	}
 }

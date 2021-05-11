@@ -16,6 +16,10 @@ public enum FolderItemState {
     var toggled: Self {
         .expand == self ? .collapse : .expand
     }
+
+	var isExpand: Bool {
+		.expand == self
+	}
     
     mutating func toggle() {
         self = self.toggled
