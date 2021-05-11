@@ -7,10 +7,10 @@
 
 import UIKit
 
-public protocol FolderListViewDelegate: class {
+public protocol FolderListViewDelegate: AnyObject {
     var itemHeight: CGFloat { get }
     
-    func folderListView<Element: FolderElementProtocol>(didSelected element: Element)
+    func folderListView<Element: FolderElementConstructable>(didSelected element: Element)
 }
 
 

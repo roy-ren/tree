@@ -14,8 +14,12 @@ let tree3 = BinaryNode.node(left: tree1, element: 103, right: tree2)
 let tree4 = BinaryNode.node(left: tree1, element: 104, right: tree3)
 let tree5 = BinaryNode.node(left: tree1, element: 105, right: tree4)
 
-print(tree3.depth)
-//print(tree5.depth)
 print(tree3.treeDescription())
 print(tree4.treeDescription())
-//print(tree5.treeDescription())
+
+struct item: FolderElementConstructable {
+    var id: Int
+    var superIdentifier: Int?
+    var rank: Int
+    var element: Int
+}

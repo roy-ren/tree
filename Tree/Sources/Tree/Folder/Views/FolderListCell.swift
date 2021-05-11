@@ -8,7 +8,7 @@
 import UIKit
 
 public protocol FolderListCellType: UITableViewCell {
-    associatedtype Element: FolderElementProtocol
+    associatedtype Element: FolderElementConstructable
     
     func config(with element: FolderConfigElement<Element>)
 }

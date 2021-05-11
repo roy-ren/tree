@@ -7,20 +7,28 @@
 
 import Foundation
 
+/// 二叉树
 public indirect enum BinaryNode<Element> {
+    /// 空节点
     case none
+    /// 非空节点
     case node(left: Self, element: Element, right: Self)
     
+    /// 默认空节点
     public init() {
         self = .none
     }
     
+    /// 只有一个节点的树
+    /// - Parameter element: 该节点的数据
     public init(element: Element) {
         self = .node(left: .none, element: element, right: .none)
     }
 }
 
 public extension BinaryNode {
+    
+    /// 是否是空树
     var isEmpty: Bool {
         switch self {
         case .none:
@@ -30,7 +38,8 @@ public extension BinaryNode {
         }
     }
     
-    var data: Element? {
+    /// 数据元素
+    var element: Element? {
         guard case .node(_, let data, _) = self else {
             return nil
         }
@@ -38,6 +47,7 @@ public extension BinaryNode {
         return data
     }
     
+    /// 左子树
     var left: Self {
         guard case .node(let left, _, _) = self else {
             return .none
@@ -46,6 +56,7 @@ public extension BinaryNode {
         return left
     }
     
+    /// 右子树
     var right: Self {
         guard case .node(_, _, let right) = self else {
             return .none
@@ -56,6 +67,12 @@ public extension BinaryNode {
 }
 
 public extension BinaryNode {
+    
+    /// 求『和』
+    /// - Parameters:
+    ///   - none: 空节点初始值
+    ///   - node: 非空节点求和表达式
+    /// - Returns: 节点『和』
     func reduce<T>(none: T, branch node: (T, Element, T) -> T) -> T {
         switch self {
         case .none:
@@ -71,27 +88,85 @@ public extension BinaryNode {
 }
 
 public extension BinaryNode {
+    
+    /// 节点个数
     var count: Int {
         reduce(none: 0, branch: { $0 + 1 + $2 })
     }
     
+    /// 所有节点数据元素的数组，非有序
     var elements: [Element] {
         reduce(none: [], branch: { $0 + [$1] + $2 })
     }
 }
 
 public extension BinaryNode {
-    var depth: Int {
+    
+    /// 树的高度
+    var height: Int {
         reduce(none: 0) { max($0, $2) + 1 }
     }
 }
 
+public enum BinaryNodeError: Error, CustomStringConvertible {
+    case invalidUpdate(String)
+    
+    public var description: String {
+        switch self {
+        case .invalidUpdate(let des):
+            return des
+        }
+    }
+}
+
+public extension BinaryNode {
+    mutating func update(element: Element) {
+        self = .node(left: left, element: element, right: right)
+    }
+    
+    mutating func update(left node: Self) throws {
+        guard let element = element else {
+            throw BinaryNodeError.invalidUpdate("none has no left")
+        }
+        
+        self = .node(left: node, element: element, right: right)
+    }
+    
+    mutating func update(right node: Self) throws {
+        guard let element = element else {
+            throw BinaryNodeError.invalidUpdate("none has no right")
+        }
+        
+        self = .node(left: left, element: element, right: node)
+    }
+    
+    mutating func clearn() {
+        self = .none
+    }
+    
+    mutating func removeLeft() throws {
+        try update(left: .none)
+    }
+    
+    mutating func removeRight() throws {
+        try update(right: .none)
+    }
+}
+
+extension BinaryNode: Equatable where Element: Equatable {}
+
+extension BinaryNode: CustomStringConvertible {
+    public var description: String {
+        treeDescription(wordWidth: 2)
+    }
+}
+    
 extension BinaryNode {
     public func treeDescription(wordWidth: Int = 5) -> String {
         let infos = constructDescriptionInfos()
         let group = Dictionary(grouping: infos, by: { $0.y })
-        let depth = self.depth
-        let width = 2 << depth - 1
+        let height = self.height
+        let width = 2 << height - 1
         let spacing = "-"
         let wordSpacing = " "
         
@@ -134,7 +209,7 @@ extension BinaryNode {
             return rowDes
         }
         
-        var rowsDes = (1...depth)
+        var rowsDes = (1...(max(1, height)))
             .map(row(at:))
         
         let rowsDesCount = rowsDes.map(\.count)
@@ -170,7 +245,7 @@ extension BinaryNode {
     
     func constructDescriptionInfos() -> [Info] {
         var list = [Info]()
-        let depth = self.depth
+        let height = self.height
         
         func handle(
             node: Self,
@@ -178,9 +253,9 @@ extension BinaryNode {
             left: Bool,
             parent: Info?
         ) {
-            guard let data = node.data else { return }
+            guard let data = node.element else { return }
             
-            let widthAsRoot = 2 << (depth - level + 1) - 1
+            let widthAsRoot = 2 << (height - level + 1) - 1
             let step = widthAsRoot / 2 + 1
             
             var x = 0
@@ -207,50 +282,3 @@ extension BinaryNode {
         return list
     }
 }
-
-public enum BinaryNodeError: Error, CustomStringConvertible {
-    case invalidUpdate(String)
-    
-    public var description: String {
-        switch self {
-        case .invalidUpdate(let des):
-            return des
-        }
-    }
-}
-
-public extension BinaryNode {
-    mutating func update(element: Element) {
-        self = .node(left: left, element: element, right: right)
-    }
-    
-    mutating func update(left node: Self) throws {
-        guard let element = data else {
-            throw BinaryNodeError.invalidUpdate("none has no left")
-        }
-        
-        self = .node(left: node, element: element, right: right)
-    }
-    
-    mutating func update(right node: Self) throws {
-        guard let element = data else {
-            throw BinaryNodeError.invalidUpdate("none has no right")
-        }
-        
-        self = .node(left: left, element: element, right: node)
-    }
-    
-    mutating func clearn() {
-        self = .none
-    }
-    
-    mutating func removeLeft() throws {
-        try update(left: .none)
-    }
-    
-    mutating func removeRight() throws {
-        try update(right: .none)
-    }
-}
-
-extension BinaryNode: Equatable where Element: Equatable {}

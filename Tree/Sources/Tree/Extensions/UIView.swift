@@ -5,6 +5,7 @@
 //  Created by roy on 2021/4/23.
 //
 
+#if os(iOS)
 import UIKit
 
 extension UIView {
@@ -21,3 +22,4 @@ extension UIView {
         ])
     }
 }
+#endif

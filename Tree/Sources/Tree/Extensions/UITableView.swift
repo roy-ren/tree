@@ -5,6 +5,7 @@
 //  Created by roy on 2021/4/23.
 //
 
+#if os(iOS)
 import UIKit
 
 extension UITableView {
@@ -32,3 +33,4 @@ extension UITableView {
         dequeueReusableHeaderFooterView(withIdentifier: HeaderFooter.identifier) as! HeaderFooter
     }
 }
+#endif

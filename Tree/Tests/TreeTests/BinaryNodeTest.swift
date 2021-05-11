@@ -12,14 +12,14 @@ final class BinaryNodeTests: XCTestCase {
     
     func test_binaryNode_initial() {
         XCTAssertEqual(.none, BinaryNode<Int>())
-        XCTAssertEqual(.node(left: .none, element: 2, right: .none), BinaryNode<Int>(element: 2))
+        XCTAssertEqual(.node(left: .none, element: 2, right: .none), BinaryNode(element: 2))
     }
     
     func test_binaryNode_properties() {
         XCTAssertTrue(BinaryNode<Int>().isEmpty)
         XCTAssertFalse(BinaryNode(element: 2).isEmpty)
         
-        XCTAssertEqual(BinaryNode<String>(element: "Hello").data, "Hello")
+        XCTAssertEqual(BinaryNode<String>(element: "Hello").element, "Hello")
         XCTAssertEqual(.none, BinaryNode<Int>().left)
         XCTAssertEqual(.none, BinaryNode(element: 0).left)
         XCTAssertEqual(.none, BinaryNode<Int>().right)
@@ -41,15 +41,15 @@ final class BinaryNodeTests: XCTestCase {
         XCTAssertEqual(tree1.left.elements, [1])
         
         // depth
-        XCTAssertEqual(one.depth, 1)
-        XCTAssertEqual(tree1.depth, 2)
-        XCTAssertEqual(tree11.depth, 2)
+        XCTAssertEqual(one.height, 1)
+        XCTAssertEqual(tree1.height, 2)
+        XCTAssertEqual(tree11.height, 2)
         
         let tree3 = BinaryNode.node(left: tree1, element: 3, right: tree2)
         let tree4 = BinaryNode.node(left: tree2, element: 4, right: tree3)
         let tree5 = BinaryNode.node(left: tree11, element: 5, right: tree4)
         
-        XCTAssertEqual(tree5.depth, 5)
+        XCTAssertEqual(tree5.height, 5)
     }
     
     func test_binaryNode_update() {
@@ -77,5 +77,10 @@ final class BinaryNodeTests: XCTestCase {
         
         XCTAssertThrowsError(try first.update(left: left))
         XCTAssertThrowsError(try first.update(right: right))
+    }
+    
+    func test_description() {
+        let one = BinaryNode(element: 1)
+        XCTAssertEqual(one.treeDescription(wordWidth: 2), "--1 --")
     }
 }
