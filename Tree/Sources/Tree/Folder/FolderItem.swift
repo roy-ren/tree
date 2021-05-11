@@ -22,7 +22,7 @@ public enum FolderItemState {
     }
 }
 
-struct FolderItem<Element: FolderElementConstructable>: Equatable {
+public struct FolderItem<Element: FolderElementConstructable>: Equatable {
     /// 数据
     var element: Element
     
@@ -39,7 +39,7 @@ struct FolderItem<Element: FolderElementConstructable>: Equatable {
     }
 }
 
-extension FolderItem {
+public extension FolderItem {
     /// 唯一 id
     var id: Element.ID { element.id }
     
@@ -51,7 +51,7 @@ extension FolderItem {
 }
 
 extension FolderItem: CustomStringConvertible {
-    var description: String {
+    public var description: String {
         "\(element.element)"
     }
 }
