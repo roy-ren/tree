@@ -4,4 +4,7 @@
    <FileRef
       location = "group:Tree">
    </FileRef>
+   <FileRef
+      location = "group:TreeDemo/TreeDemo.xcodeproj">
+   </FileRef>
 </Workspace>

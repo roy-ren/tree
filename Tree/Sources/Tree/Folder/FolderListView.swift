@@ -11,13 +11,27 @@ public enum FolderElement<Element: FolderElementConstructable> {
     case normal(FolderItem<Element>)
     case folder(FolderItem<Element>)
     
-    public var element: Element {
+    public var item: FolderItem<Element> {
         switch self {
         case .normal(let item):
-            return item.element
+            return item
         case .folder(let item):
-            return item.element
+            return item
         }
+    }
+    
+    public var element: Element {
+        item.element
+    }
+    
+    /// 层级深度（与树的深度不同）, 根节点的深度为 0
+    public var depth: Int {
+        item.depth
+    }
+    
+    /// 展开状态
+    public var state: FolderItemState {
+        item.state
     }
 }
 
@@ -36,33 +50,50 @@ public final class FolderListView<Delegate: FolderListViewDelegate>: UIView, UIT
     public typealias Element = Delegate.Element
     public weak var delegate: Delegate?
 
-    private var dataSource: Folder<Element>
-    private let table = UITableView()
+    private var dataSource = Folder<Element>()
+    private let tableView = UITableView()
 
+    private var didContructedSubView = false
+    
     private typealias Cell = FolderListCell<Delegate.Cell>
     private typealias Header = FolderListHeader<Delegate.Cell>
 
     public override init(frame: CGRect) {
-        dataSource = .init()
         super.init(frame: frame)
-    }
-
-    public init(elements: [Element]) {
-        dataSource = .init(elements: elements)
-        super.init(frame: .zero)
     }
 
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
+    
+    public override func didMoveToWindow() {
+        super.didMoveToWindow()
+        
+        guard !didContructedSubView else { return }
+        
+        if let delegate = delegate {
+            dataSource = .init(elements: delegate.elements)
+        }
+        
+        constractViewHierarchyAndConstraint()
+    }
 
-    private func constructTableViewAndConstraint() {
-        table.addedAsContent(toSuper: self)
-        table.dataSource = self
-        table.delegate = self
-
-        table.register(cell: Cell.self)
-        table.register(headerFooter: Header.self)
+    private func constractViewHierarchyAndConstraint() {
+        addSubview(tableView)
+        
+        tableView.dataSource = self
+        tableView.delegate = self
+        tableView.register(cell: Cell.self)
+        tableView.register(headerFooter: Header.self)
+        tableView.addedAsContent(toSuper: self)
+        tableView.tableFooterView = .init()
+        
+        if let height = delegate?.itemHeight {
+            tableView.rowHeight = height
+            tableView.sectionHeaderHeight = height
+        }
+        
+        didContructedSubView = true
     }
 
     // MARK: - UITableViewDataSource
@@ -76,7 +107,7 @@ public final class FolderListView<Delegate: FolderListViewDelegate>: UIView, UIT
     }
 
     public func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell: Cell = table.dequeueReusableCell(forRowAt: indexPath)
+        let cell: Cell = tableView.dequeueReusableCell(forRowAt: indexPath)
 
 		let item = dataSource.item(forRowAt: indexPath)
 
@@ -113,29 +144,29 @@ extension FolderListView {
 
     private func toggle(section: Int, completion: @escaping (FolderItemState) -> Void) {
         func update(_ editChange: FolderEditChange, completion: @escaping () -> Void) {
-            table.isUserInteractionEnabled = false
+            tableView.isUserInteractionEnabled = false
             
-            table.performBatchUpdates {
+            tableView.performBatchUpdates {
                 if !editChange.removeIndexPaths.isEmpty {
-                    table.deleteRows(at: editChange.removeIndexPaths, with: .fade)
+                    tableView.deleteRows(at: editChange.removeIndexPaths, with: .fade)
                 }
                 
                 if !editChange.removeIndexSet.isEmpty {
-                    table.deleteSections(editChange.removeIndexSet, with: .fade)
+                    tableView.deleteSections(editChange.removeIndexSet, with: .fade)
                 }
                 
                 if !editChange.insertIndexPaths.isEmpty {
-                    table.insertRows(at: editChange.insertIndexPaths, with: .fade)
+                    tableView.insertRows(at: editChange.insertIndexPaths, with: .fade)
                 }
                 
                 if !editChange.insertIndexSet.isEmpty {
-                    table.insertSections(editChange.insertIndexSet, with: .fade)
+                    tableView.insertSections(editChange.insertIndexSet, with: .fade)
                 }
                 
             } completion: { isFinished in
                 if isFinished {
-                    self.table.reloadData()
-                    self.table.isUserInteractionEnabled = true
+                    self.tableView.reloadData()
+                    self.tableView.isUserInteractionEnabled = true
                     completion()
                 }
             }

@@ -24,5 +24,5 @@ public protocol FolderElementConstructable: Identifiable, Equatable {
     var superIdentifier: ID? { get }
     
     /// 在同级中的排序
-    var rank: Int { get set }
+    var rank: Int { get }
 }
