@@ -11,9 +11,16 @@ struct ContentView: View {
     var body: some View {
         NavigationView {
             List(Feature.allCases) { feature in
-                NavigationLink(destination: ViewWrapper<FolderListViewController>()) {
-                    Text(feature.rawValue)
-                        .fontWeight(.bold)
+                if .folder == feature {
+                    NavigationLink(destination: ViewWrapper<TestFolderViewController>()) {
+                        Text(feature.rawValue)
+                            .fontWeight(.bold)
+                    }
+                } else {
+                    NavigationLink(destination: ViewWrapper<FolderListViewController>()) {
+                        Text(feature.rawValue)
+                            .fontWeight(.bold)
+                    }
                 }
             }
         }
@@ -22,9 +29,9 @@ struct ContentView: View {
 
 enum Feature: String, CaseIterable, Identifiable {
     case treeListView = "Tree list view."
+    case folder = "Xim Folder"
     
     var id: String { rawValue }
-    
 }
 
 struct ContentView_Previews: PreviewProvider {

@@ -179,25 +179,24 @@ extension FolderListView {
             tableView.isUserInteractionEnabled = false
             
             tableView.performBatchUpdates {
-                if !editChange.removeIndexPaths.isEmpty {
-                    tableView.deleteRows(at: editChange.removeIndexPaths, with: .fade)
-                }
-                
                 if !editChange.removeIndexSet.isEmpty {
                     tableView.deleteSections(editChange.removeIndexSet, with: .fade)
                 }
                 
-                if !editChange.insertIndexPaths.isEmpty {
-                    tableView.insertRows(at: editChange.insertIndexPaths, with: .fade)
+                if !editChange.removeIndexPaths.isEmpty {
+                    tableView.deleteRows(at: editChange.removeIndexPaths, with: .fade)
                 }
                 
                 if !editChange.insertIndexSet.isEmpty {
                     tableView.insertSections(editChange.insertIndexSet, with: .fade)
                 }
                 
+                if !editChange.insertIndexPaths.isEmpty {
+                    tableView.insertRows(at: editChange.insertIndexPaths, with: .fade)
+                }
             } completion: { isFinished in
                 if isFinished {
-                    self.tableView.reloadData()
+//                    self.tableView.reloadData()
                     self.tableView.isUserInteractionEnabled = true
                     completion()
                 }

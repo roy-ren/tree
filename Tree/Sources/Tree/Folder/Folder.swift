@@ -87,7 +87,7 @@ extension Folder {
 			var pathIdentifiers = [sections[section].item.id]
 			var element: Element? = sections[section].item.element
 
-			while let id = element?.superIdentifier {
+            while let id = element?.parentIdentifier, id != Element.invisableRootIdentifier {
 				pathIdentifiers.append(id)
 				element = secitonInfos[id]?.first?.item.element
 			}

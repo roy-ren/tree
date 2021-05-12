@@ -35,18 +35,18 @@ class FolderListViewController: UIViewController {
 extension FolderListViewController: FolderListViewDelegate {
     var elements: [Element] {
         [
-            .init(id: 0, element: 0, superIdentifier: nil, rank: 0),
-            .init(id: 1, element: 1, superIdentifier: 0, rank: 0),
-            .init(id: 11, element: 11, superIdentifier: 1, rank: 0),
-            .init(id: 12, element: 12, superIdentifier: 1, rank: 1),
-            .init(id: 121, element: 121, superIdentifier: 12, rank: 0),
-            .init(id: 13, element: 13, superIdentifier: 1, rank: 2),
-            .init(id: 2, element: 2, superIdentifier: 0, rank: 1),
-            .init(id: 20, element: 20, superIdentifier: 2, rank: 0),
-            .init(id: 21, element: 21, superIdentifier: 2, rank: 1),
-            .init(id: 211, element: 211, superIdentifier: 21, rank: 0),
-//            .init(id: 3, element: 3, superIdentifier: 0, rank: 2),
-//            .init(id: 200, element: 300, superIdentifier: nil, rank: 1),
+            .init(id: 0, element: 0, parentIdentifier: -1, rank: 0),
+            .init(id: 1, element: 1, parentIdentifier: 0, rank: 0),
+            .init(id: 11, element: 11, parentIdentifier: 1, rank: 0),
+            .init(id: 12, element: 12, parentIdentifier: 1, rank: 1),
+            .init(id: 121, element: 121, parentIdentifier: 12, rank: 0),
+            .init(id: 13, element: 13, parentIdentifier: 1, rank: 2),
+            .init(id: 2, element: 2, parentIdentifier: 0, rank: 1),
+            .init(id: 20, element: 20, parentIdentifier: 2, rank: 0),
+            .init(id: 21, element: 21, parentIdentifier: 2, rank: 1),
+            .init(id: 211, element: 211, parentIdentifier: 21, rank: 0),
+//            .init(id: 3, element: 3, parentIdentifier: 0, rank: 2),
+//            .init(id: 200, element: 300, parentIdentifier: nil, rank: 1),
         ]
     }
     
@@ -123,7 +123,9 @@ extension FolderListViewController {
     struct Element: FolderElementConstructable {
         let id: Int
         let element: Int
-        let superIdentifier: Int?
+        let parentIdentifier: Int
         let rank: Int
+        
+        static let invisableRootIdentifier = -1
     }
 }

@@ -19,7 +19,7 @@ print(tree4.treeDescription())
 
 struct item: FolderElementConstructable {
     var id: Int
-    var superIdentifier: Int?
+    var parentIdentifier: Int?
     var rank: Int
     var element: Int
 }

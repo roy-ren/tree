@@ -15,6 +15,7 @@
 		B041A840264BBFC200D83377 /* FolderListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B041A83F264BBFC200D83377 /* FolderListViewController.swift */; };
 		B041A843264BBFE100D83377 /* Tree in Frameworks */ = {isa = PBXBuildFile; productRef = B041A842264BBFE100D83377 /* Tree */; };
 		B041A846264BC0A900D83377 /* RLayoutKit in Frameworks */ = {isa = PBXBuildFile; productRef = B041A845264BC0A900D83377 /* RLayoutKit */; };
+		B041A848264BCB0700D83377 /* TestFolderViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B041A847264BCB0700D83377 /* TestFolderViewController.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -26,6 +27,7 @@
 		B041A835264BB8C200D83377 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		B041A83C264BBF8900D83377 /* ViewWrapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewWrapper.swift; sourceTree = "<group>"; };
 		B041A83F264BBFC200D83377 /* FolderListViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FolderListViewController.swift; sourceTree = "<group>"; };
+		B041A847264BCB0700D83377 /* TestFolderViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestFolderViewController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -92,6 +94,7 @@
 			isa = PBXGroup;
 			children = (
 				B041A83F264BBFC200D83377 /* FolderListViewController.swift */,
+				B041A847264BCB0700D83377 /* TestFolderViewController.swift */,
 			);
 			path = FolderList;
 			sourceTree = "<group>";
@@ -182,6 +185,7 @@
 				B041A840264BBFC200D83377 /* FolderListViewController.swift in Sources */,
 				B041A82F264BB8C000D83377 /* ContentView.swift in Sources */,
 				B041A83D264BBF8900D83377 /* ViewWrapper.swift in Sources */,
+				B041A848264BCB0700D83377 /* TestFolderViewController.swift in Sources */,
 				B041A82D264BB8C000D83377 /* TreeDemoApp.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
