@@ -333,48 +333,152 @@ final class FolderTests: XCTestCase {
 	}
 
 	func test_toggle_section() {
-		let stringElements: [MockStringElement] = [
-			.init(id: "a", element: "A", superIdentifier: nil, rank: 0), // 0
-			.init(id: "b", element: "B", superIdentifier: nil, rank: 1), // 1
-			.init(id: "c", element: "C", superIdentifier: nil, rank: 2), // 2
-			.init(id: "d", element: "D", superIdentifier: "a", rank: 0), // 3
-			.init(id: "e", element: "E", superIdentifier: "a", rank: 1), // 4
-			.init(id: "f", element: "F", superIdentifier: "b", rank: 0), // 5
-			.init(id: "g", element: "G", superIdentifier: "c", rank: 0), // 6
-			.init(id: "h", element: "H", superIdentifier: "c", rank: 1), // 7
-			.init(id: "i", element: "I", superIdentifier: "f", rank: 0), // 8
-			.init(id: "j", element: "J", superIdentifier: "f", rank: 1), // 9
-		]
-
+        let stringElements: [MockStringElement] = [
+            .init(id: "a", element: "A", superIdentifier: nil, rank: 0), // 0
+            .init(id: "b", element: "B", superIdentifier: nil, rank: 1), // 1
+            .init(id: "c", element: "C", superIdentifier: nil, rank: 2), // 2
+            .init(id: "d", element: "D", superIdentifier: nil, rank: 3), // 3
+            .init(id: "e", element: "E", superIdentifier: "a", rank: 0), // 4
+            .init(id: "f", element: "F", superIdentifier: "a", rank: 1), // 5
+            .init(id: "g", element: "G", superIdentifier: "c", rank: 0), // 6
+            .init(id: "h", element: "H", superIdentifier: "g", rank: 0), // 7
+            .init(id: "i", element: "I", superIdentifier: "g", rank: 1), // 8
+            .init(id: "j", element: "J", superIdentifier: "h", rank: 0), // 9
+        ]
+        
 		typealias StringFolder = Folder<MockStringElement>
 		var folder = StringFolder(elements: stringElements)
 
 		typealias Section = StringFolder.Section
 
-		let items = folder.root
+		let elements = folder.root
 			.elements
 			.sorted {
 				$0.element.element < $1.element.element
 			}
 
+        let infos = Dictionary(grouping: elements, by: { $0.id })
+        
+        func item(_ id: String) -> FolderItem<MockStringElement> {
+            infos[id]!.first!
+        }
+        
+        func items(_ ids: [String]) -> [FolderItem<MockStringElement>] {
+            ids.map(item(_:))
+        }
+        
 		let sections = [
-			Section(item: items[0], subItems: [items[3], items[4]]),
-			Section(item: items[1]),
-			Section(item: items[5], subItems: [items[8], items[9]]),
-			Section(item: items[2], subItems: [items[6], items[7]]),
+			Section(item: item("a"), subItems: items(["e", "f", "b"])),
+			Section(item: item("c")),
+            Section(item: item("g")),
+			Section(item: item("h"), subItems: items(["j", "i", "d"])),
 		]
 
+        // construct
 		XCTAssertEqual(folder.sections, sections)
 
-		folder.toggle(section: 1)
+        // 1. collapse A
+        let collapseResult_a = try! folder.toggle(section: 0)
+        
+        var folderItem_a = item("a")
+        folderItem_a.state = .collapse
+        
+        let sections_collapse_a = [
+            Section(item: folderItem_a, subItems: items(["b"])),
+            Section(item: item("c")),
+            Section(item: item("g")),
+            Section(item: item("h"), subItems: items(["j", "i", "d"])),
+        ]
+        
+        XCTAssertEqual(folder.sections, sections_collapse_a)
 
-		let sections1 = [
-			Section(item: items[0], subItems: [items[3], items[4], items[1]]),
-//			Section(item: items[1]),
-//			Section(item: items[5], subItems: [items[8], items[9]]),
-			Section(item: items[2], subItems: [items[6], items[7]]),
-		]
-
-		XCTAssertEqual(folder.sections, sections1)
+        XCTAssertEqual(
+            FolderEditChange(
+                removeIndexPaths: [.init(row: 0, section: 0), .init(row: 1, section: 0)]
+            ),
+            collapseResult_a.change
+        )
+        
+        // 2. collapse G
+        let collapseResult_a_g = try! folder.toggle(section: 2)
+        
+        var folderItem_g = item("g")
+        folderItem_g.state = .collapse
+        
+        let sections_collapse_a_g = [
+            Section(item: folderItem_a, subItems: items(["b"])),
+            Section(item: item("c")),
+            Section(item: folderItem_g, subItems: items(["d"])),
+        ]
+        
+        XCTAssertEqual(folder.sections, sections_collapse_a_g)
+        XCTAssertEqual(
+            FolderEditChange(
+                insertIndexPaths: [.init(row: 0, section: 2)],
+                removeIndexSet: [3]
+            ),
+            collapseResult_a_g.change
+        )
+        
+        // 3. expand G
+        let expandResult_a_g = try! folder.toggle(section: 2)
+        folderItem_g.state = .expand
+        
+        let sections_expand_g = [
+            Section(item: folderItem_a, subItems: items(["b"])),
+            Section(item: item("c")),
+            Section(item: folderItem_g),
+            Section(item: item("h"), subItems: items(["j", "i", "d"])),
+        ]
+        XCTAssertEqual(folder.sections, sections_expand_g)
+        
+        XCTAssertEqual(
+            FolderEditChange(
+                removeIndexPaths: [.init(row: 0, section: 2)],
+                insertIndexSet: [3]
+            ),
+            expandResult_a_g.change
+        )
+        
+        // 4. collapse H
+        let collapseResult_h = try! folder.toggle(section: 3)
+        
+        var folderItem_h = item("h")
+        folderItem_h.state = .collapse
+        
+        let sections_collapse_h = [
+            Section(item: folderItem_a, subItems: items(["b"])),
+            Section(item: item("c")),
+            Section(item: folderItem_g),
+            Section(item: folderItem_h, subItems: items(["i", "d"])),
+        ]
+        
+        XCTAssertEqual(folder.sections, sections_collapse_h)
+        XCTAssertEqual(
+            FolderEditChange(
+                removeIndexPaths: [.init(row: 0, section: 3)]
+            ),
+            collapseResult_h.change
+        )
+        
+        // 5. collapse C
+        let collapseResult_c = try! folder.toggle(section: 1)
+        
+        var folderItem_c = item("c")
+        folderItem_c.state = .collapse
+        
+        let sections_collapse_c = [
+            Section(item: folderItem_a, subItems: items(["b"])),
+            Section(item: folderItem_c, subItems: items(["d"])),
+        ]
+        
+        XCTAssertEqual(folder.sections, sections_collapse_c)
+        XCTAssertEqual(
+            FolderEditChange(
+                insertIndexPaths: [.init(row: 0, section: 1)],
+                removeIndexSet: [2, 3]
+            ),
+            collapseResult_c.change
+        )
 	}
 }
