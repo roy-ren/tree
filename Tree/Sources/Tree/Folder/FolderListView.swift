@@ -58,6 +58,13 @@ public final class FolderListView<Delegate: FolderListViewDelegate>: UIView, UIT
     private typealias Cell = FolderListCell<Delegate.Cell>
     private typealias Header = FolderListHeader<Delegate.Cell>
 
+    private var _isNotInToggle = true
+    private let fetchToggleStateQeuue = DispatchQueue(label: "com.tree.FolderListView.toggle")
+    private var isNotInToggle: Bool {
+        get { fetchToggleStateQeuue.sync { _isNotInToggle } }
+        set { fetchToggleStateQeuue.async { self._isNotInToggle = newValue } }
+    }
+    
     public override init(frame: CGRect) {
         super.init(frame: frame)
     }
@@ -143,7 +150,32 @@ extension FolderListView {
     }
 
     private func toggle(section: Int, completion: @escaping (FolderItemState) -> Void) {
-        func update(_ editChange: FolderEditChange, completion: @escaping () -> Void) {
+        guard isNotInToggle else {
+            return
+        }
+        
+        isNotInToggle = false
+        
+        do {
+            let result = try dataSource.toggle(section: section)
+            
+            if .none == result.change {
+                completion(result.newState)
+                isNotInToggle = true
+            } else {
+                update(result.change) {
+                    completion(result.newState)
+                    self.isNotInToggle = true
+                }
+            }
+        } catch let error {
+            isNotInToggle = true
+            print(error.localizedDescription)
+        }
+    }
+    
+    private func update(_ editChange: FolderEditChange, completion: @escaping () -> Void) {
+        func update() {
             tableView.isUserInteractionEnabled = false
             
             tableView.performBatchUpdates {
@@ -172,19 +204,8 @@ extension FolderListView {
             }
         }
         
-        do {
-            let result = try dataSource.toggle(section: section)
-            
-            if .none == result.change {
-                completion(result.newState)
-            } else {
-                update(result.change) {
-                    completion(result.newState)
-                }
-            }
-            
-        } catch let error {
-            print(error.localizedDescription)
+        DispatchQueue.main.async {
+            update()
         }
     }
 }
