@@ -7,22 +7,40 @@
 
 import UIKit
 
-public protocol FolderListViewDelegate: AnyObject {
-    var itemHeight: CGFloat { get }
-
-    func folderListView<Element: FolderElementConstructable>(didSelected element: Element)
+public enum FolderElement<Element: FolderElementConstructable> {
+    case normal(FolderItem<Element>)
+    case folder(FolderItem<Element>)
+    
+    public var element: Element {
+        switch self {
+        case .normal(let item):
+            return item.element
+        case .folder(let item):
+            return item.element
+        }
+    }
 }
 
-public final class FolderListView<Cell: FolderListCellType>: UIView, UITableViewDataSource, UITableViewDelegate {
+public protocol FolderListViewDelegate: AnyObject {
+    associatedtype Cell: FolderListCellViewType
+    typealias Element = Cell.Element
+    
+    var elements: [Element] { get }
+    var itemHeight: CGFloat { get }
+    
+    func folderListView(didSelected element: FolderElement<Element>, of cell: Cell)
+}
 
-    public typealias Element = Cell.Element
-    public weak var delegate: FolderListViewDelegate?
+public final class FolderListView<Delegate: FolderListViewDelegate>: UIView, UITableViewDataSource, UITableViewDelegate {
+
+    public typealias Element = Delegate.Element
+    public weak var delegate: Delegate?
 
     private var dataSource: Folder<Element>
     private let table = UITableView()
 
-    private typealias ListCell = FolderListCell<Cell>
-    private typealias Header = FolderListHeader<Cell>
+    private typealias Cell = FolderListCell<Delegate.Cell>
+    private typealias Header = FolderListHeader<Delegate.Cell>
 
     public override init(frame: CGRect) {
         dataSource = .init()
@@ -43,7 +61,7 @@ public final class FolderListView<Cell: FolderListCellType>: UIView, UITableView
         table.dataSource = self
         table.delegate = self
 
-        table.register(cell: ListCell.self)
+        table.register(cell: Cell.self)
         table.register(headerFooter: Header.self)
     }
 
@@ -58,11 +76,11 @@ public final class FolderListView<Cell: FolderListCellType>: UIView, UITableView
     }
 
     public func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = table.dequeueReusableCell(withIdentifier: "Cell", for: indexPath) as! Cell
+        let cell: Cell = table.dequeueReusableCell(forRowAt: indexPath)
 
-		let element = dataSource.item(forRowAt: indexPath)
+		let item = dataSource.item(forRowAt: indexPath)
 
-		cell.config(with: .normal(element.element))
+        cell.config(.normal(item))
 
         return cell
     }
@@ -71,15 +89,16 @@ public final class FolderListView<Cell: FolderListCellType>: UIView, UITableView
     public func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
         let header: Header = tableView.dequeueReusableHeaderFooter()
 
-		let element = dataSource.item(for: section).element
-        header.config(.folder(element))
+        let item = FolderElement.folder(dataSource.item(for: section))
+        
+        header.config(item)
+        
         header.tappedClosure = { [weak self] cell in
             guard let self = self else { return }
 
-            self.toggle(section: section) { [weak self] isCompletion in
+            self.toggle(section: section) { [weak self] _ in
                 guard let self = self else { return }
-
-                if isCompletion { self.triger(didSelected: element) }
+                self.triger(didSelected: item, of: cell)
             }
         }
 
@@ -88,11 +107,53 @@ public final class FolderListView<Cell: FolderListCellType>: UIView, UITableView
 }
 
 extension FolderListView {
-    private func triger(didSelected item: Element) {
-        delegate?.folderListView(didSelected: item)
+    private func triger(didSelected item: FolderElement<Element>, of cell: Delegate.Cell) {
+        delegate?.folderListView(didSelected: item, of: cell)
     }
 
-    private func toggle(section: Int, completion: @escaping (Bool) -> Void) {
-
+    private func toggle(section: Int, completion: @escaping (FolderItemState) -> Void) {
+        func update(_ editChange: FolderEditChange, completion: @escaping () -> Void) {
+            table.isUserInteractionEnabled = false
+            
+            table.performBatchUpdates {
+                if !editChange.removeIndexPaths.isEmpty {
+                    table.deleteRows(at: editChange.removeIndexPaths, with: .fade)
+                }
+                
+                if !editChange.removeIndexSet.isEmpty {
+                    table.deleteSections(editChange.removeIndexSet, with: .fade)
+                }
+                
+                if !editChange.insertIndexPaths.isEmpty {
+                    table.insertRows(at: editChange.insertIndexPaths, with: .fade)
+                }
+                
+                if !editChange.insertIndexSet.isEmpty {
+                    table.insertSections(editChange.insertIndexSet, with: .fade)
+                }
+                
+            } completion: { isFinished in
+                if isFinished {
+                    self.table.reloadData()
+                    self.table.isUserInteractionEnabled = true
+                    completion()
+                }
+            }
+        }
+        
+        do {
+            let result = try dataSource.toggle(section: section)
+            
+            if .none == result.change {
+                completion(result.newState)
+            } else {
+                update(result.change) {
+                    completion(result.newState)
+                }
+            }
+            
+        } catch let error {
+            print(error.localizedDescription)
+        }
     }
 }

@@ -7,20 +7,6 @@
 
 import Foundation
 
-public enum FolderConfigElement<Element: FolderElementConstructable> {
-    case normal(Element)
-    case folder(Element)
-    
-    public var element: Element {
-        switch self {
-        case .normal(let element):
-            return element
-        case .folder(let element):
-            return element
-        }
-    }
-}
-
 public struct FolderEditChange: Equatable {
 	static let none = FolderEditChange()
 

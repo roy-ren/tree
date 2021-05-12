@@ -8,22 +8,19 @@
 import UIKit
 
 class FolderListHeader<
-    Content: FolderListCellType
+    Content: FolderListCellViewType
 >: UITableViewHeaderFooterView, FolderListViewReuseViewProtocol {
     let content: Content
     
     typealias TappedClosure = (Content) -> Void
     var tappedClosure: TappedClosure?
     
-    
     override init(reuseIdentifier: String?) {
         content = .init()
         super.init(reuseIdentifier: reuseIdentifier)
         content.addedAsContent(toSuper: contentView)
         
-        let gesture = UITapGestureRecognizer(target: self, action: #selector(didTappedHeader))
-        gesture.numberOfTapsRequired = 1
-        gesture.numberOfTouchesRequired = 1
+        let gesture = UITapGestureRecognizer(target: self, action: #selector(didTappedHeader(_:)))
         contentView.addGestureRecognizer(gesture)
     }
     
@@ -31,8 +28,13 @@ class FolderListHeader<
         fatalError("init(coder:) has not been implemented")
     }
     
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        tappedClosure = nil
+    }
+    
     @objc
-    func didTappedHeader() {
+    func didTappedHeader(_ gesture: UITapGestureRecognizer) {
         tappedClosure?(content)
     }
 }

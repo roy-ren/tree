@@ -7,14 +7,14 @@
 
 import UIKit
 
-public protocol FolderListCellType: UITableViewCell {
+public protocol FolderListCellViewType: UIView {
     associatedtype Element: FolderElementConstructable
     
-    func config(with element: FolderConfigElement<Element>)
+    func config(with element: FolderElement<Element>)
 }
 
 class FolderListCell<
-    Content: FolderListCellType
+    Content: FolderListCellViewType
 >: UITableViewCell, FolderListViewReuseViewProtocol {
     let content: Content
     

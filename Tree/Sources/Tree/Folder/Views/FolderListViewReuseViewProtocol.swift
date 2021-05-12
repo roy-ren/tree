@@ -16,13 +16,13 @@ extension Registrable {
 }
 
 protocol FolderListViewReuseViewProtocol: Registrable {
-    associatedtype ContentView: FolderListCellType
+    associatedtype ContentView: FolderListCellViewType
     
     var content: ContentView { get }
 }
 
 extension FolderListViewReuseViewProtocol {
-    func config(_ element: FolderConfigElement<ContentView.Element>) {
+    func config(_ element: FolderElement<ContentView.Element>) {
         content.config(with: element)
     }
 }
