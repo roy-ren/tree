@@ -49,9 +49,10 @@ public final class FolderListView<Delegate: FolderListViewDelegate>: UIView, UIT
 
     public typealias Element = Delegate.Element
     public weak var delegate: Delegate?
+    public var enabledFold: Bool = true
 
     private var dataSource = Folder<Element>()
-    private let tableView = UITableView()
+    private let tableView = UITableView(frame: .zero, style: .grouped)
 
     private var didContructedSubView = false
     
@@ -79,7 +80,7 @@ public final class FolderListView<Delegate: FolderListViewDelegate>: UIView, UIT
         guard !didContructedSubView else { return }
         
         if let delegate = delegate {
-            dataSource = .init(elements: delegate.elements)
+            dataSource = .init(elements: delegate.elements, enabledFold: enabledFold)
         }
         
         constractViewHierarchyAndConstraint()
@@ -88,6 +89,7 @@ public final class FolderListView<Delegate: FolderListViewDelegate>: UIView, UIT
     private func constractViewHierarchyAndConstraint() {
         addSubview(tableView)
         
+        tableView.separatorStyle = .none
         tableView.dataSource = self
         tableView.delegate = self
         tableView.register(cell: Cell.self)
@@ -122,6 +124,14 @@ public final class FolderListView<Delegate: FolderListViewDelegate>: UIView, UIT
 
         return cell
     }
+    
+    public func tableView(_ tableView: UITableView, heightForFooterInSection section: Int) -> CGFloat {
+        0
+    }
+    
+    public func tableView(_ tableView: UITableView, viewForFooterInSection section: Int) -> UIView? {
+        nil
+    }
 
     // MARK: - UITableViewDelegate
     public func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
@@ -134,13 +144,25 @@ public final class FolderListView<Delegate: FolderListViewDelegate>: UIView, UIT
         header.tappedClosure = { [weak self] cell in
             guard let self = self else { return }
 
-            self.toggle(section: section) { [weak self] _ in
-                guard let self = self else { return }
+            if self.enabledFold {
+                self.toggle(section: section) { [weak self] _ in
+                    guard let self = self else { return }
+                    self.triger(didSelected: item, of: cell)
+                }
+            } else {
                 self.triger(didSelected: item, of: cell)
             }
         }
 
         return header
+    }
+    
+    public func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        tableView.deselectRow(at: indexPath, animated: true)
+        guard let cell = tableView.cellForRow(at: indexPath) as? Cell else { return }
+        
+        let item = FolderElement.normal(dataSource.item(forRowAt: indexPath))
+        triger(didSelected: item, of: cell.content)
     }
 }
 

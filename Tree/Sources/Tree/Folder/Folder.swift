@@ -31,15 +31,18 @@ public struct FolderEditChange: Equatable {
 public struct Folder<Element: FolderElementConstructable> {
     public typealias Item = FolderItem<Element>
     
+    public var enabledFold: Bool
+    
     typealias Node = BinaryNode<Item>
     private(set) var root: Node
     private(set) var sections = [Section]()
     
     var numberOfSections: Int { sections.count }
     
-    public init(elements: [Element] = []) {
+    public init(elements: [Element] = [], enabledFold: Bool = true) {
+        self.enabledFold = enabledFold
         self.root = Item.recursiveConstructNode(with: elements)
-
+        
 		constructTableDataSource()
     }
 }
@@ -257,10 +260,10 @@ extension Folder {
     }
     
     mutating func constructTableDataSource() {
-        self.sections = construct(node: root)
+        self.sections = construct(node: root, isOnlyExpand: enabledFold)
     }
     
-    private func construct(node: Node, isOnlyExpand flag: Bool = true) -> [Section] {
+    private func construct(node: Node, isOnlyExpand flag: Bool = false) -> [Section] {
         let info = constructDataSource(node: node, isOnlyExpand: flag)
         
         switch info {

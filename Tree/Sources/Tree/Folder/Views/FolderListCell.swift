@@ -22,6 +22,7 @@ class FolderListCell<
         content = .init()
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         content.addedAsContent(toSuper: contentView)
+        selectionStyle = .none
     }
     
     required init?(coder: NSCoder) {

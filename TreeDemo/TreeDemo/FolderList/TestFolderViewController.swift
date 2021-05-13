@@ -25,6 +25,7 @@ class TestFolderViewController: UIViewController {
         view.backgroundColor = .white
         
         folderView.delegate = self
+        folderView.enabledFold = false
         
         folderView.rl.added(to: view) {
             $0.edges == $1.edges
