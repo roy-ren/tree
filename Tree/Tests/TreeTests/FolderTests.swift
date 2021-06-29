@@ -10,22 +10,26 @@ import XCTest
 
 final class FolderTests: XCTestCase {
 	struct MockElement: FolderElementConstructable {
+		static var invisableRootIdentifier: Int = -1
+
 		let id: Int
 		let element: Int
-		let parentIdentifier: Int?
+		let parentIdentifier: Int
 		var rank: Int
 	}
 
 	struct MockStringElement: FolderElementConstructable {
+		static var invisableRootIdentifier: String = "root"
+
 		let id: String
 		let element: String
-		let parentIdentifier: String?
+		let parentIdentifier: String
 		var rank: Int
 	}
 
 	func test_initial() {
 		let elementsOne: [MockElement] = [
-			.init(id: 0, element: 1, parentIdentifier: nil, rank: 0)
+			.init(id: 0, element: 1, parentIdentifier: -1, rank: 0)
 		]
 
 		let folderOne = Folder(elements: elementsOne)
@@ -36,7 +40,7 @@ final class FolderTests: XCTestCase {
 		)
 
 		let elements1: [MockElement] = [
-			.init(id: 0, element: 1, parentIdentifier: nil, rank: 0),
+			.init(id: 0, element: 1, parentIdentifier: -1, rank: 0),
 			.init(id: 1, element: 2, parentIdentifier: 0, rank: 0)
 		]
 
@@ -56,7 +60,7 @@ final class FolderTests: XCTestCase {
 		)
 
 		let elements2: [MockElement] = [
-			.init(id: 0, element: 1, parentIdentifier: nil, rank: 0),
+			.init(id: 0, element: 1, parentIdentifier: -1, rank: 0),
 			.init(id: 1, element: 2, parentIdentifier: 0, rank: 0),
 			.init(id: 2, element: 3, parentIdentifier: 0, rank: 1)
 		]
@@ -81,7 +85,7 @@ final class FolderTests: XCTestCase {
 		)
 
 		let elements: [MockElement] = [
-			.init(id: 0, element: 0, parentIdentifier: nil, rank: 0),
+			.init(id: 0, element: 0, parentIdentifier: -1, rank: 0),
 			.init(id: 1, element: 1, parentIdentifier: 0, rank: 0),
 			.init(id: 2, element: 2, parentIdentifier: 0, rank: 1),
 			.init(id: 3, element: 3, parentIdentifier: 1, rank: 0),
@@ -123,14 +127,14 @@ final class FolderTests: XCTestCase {
 
 	func test_initial_string() {
 		let stringElements: [MockStringElement] = [
-			.init(id: "a", element: "A", parentIdentifier: nil, rank: 0), // 0
+			.init(id: "a", element: "A", parentIdentifier: "root", rank: 0), // 0
 			.init(id: "d", element: "D", parentIdentifier: "a", rank: 0), // 1
 			.init(id: "e", element: "E", parentIdentifier: "a", rank: 1), // 2
-			.init(id: "b", element: "B", parentIdentifier: nil, rank: 1), // 3
+			.init(id: "b", element: "B", parentIdentifier: "root", rank: 1), // 3
 			.init(id: "f", element: "F", parentIdentifier: "b", rank: 0), // 4
 			.init(id: "i", element: "I", parentIdentifier: "f", rank: 0), // 5
 			.init(id: "j", element: "J", parentIdentifier: "f", rank: 1), // 6
-			.init(id: "c", element: "C", parentIdentifier: nil, rank: 2), // 7
+			.init(id: "c", element: "C", parentIdentifier: "root", rank: 2), // 7
 			.init(id: "g", element: "G", parentIdentifier: "c", rank: 0), // 8
 			.init(id: "h", element: "H", parentIdentifier: "c", rank: 1), // 9
 		]
@@ -184,10 +188,10 @@ final class FolderTests: XCTestCase {
 
 	func test_initial_string2() {
 		let elements: [MockStringElement] = [
-			.init(id: "a", element: "A", parentIdentifier: nil, rank: 0), // 0
-			.init(id: "b", element: "B", parentIdentifier: nil, rank: 1), // 1
-			.init(id: "c", element: "C", parentIdentifier: nil, rank: 2), // 2
-			.init(id: "d", element: "D", parentIdentifier: nil, rank: 3), // 3
+			.init(id: "a", element: "A", parentIdentifier: "root", rank: 0), // 0
+			.init(id: "b", element: "B", parentIdentifier: "root", rank: 1), // 1
+			.init(id: "c", element: "C", parentIdentifier: "root", rank: 2), // 2
+			.init(id: "d", element: "D", parentIdentifier: "root", rank: 3), // 3
 			.init(id: "e", element: "E", parentIdentifier: "b", rank: 0), // 4
 			.init(id: "f", element: "F", parentIdentifier: "b", rank: 1), // 5
 			.init(id: "g", element: "G", parentIdentifier: "c", rank: 1), // 6
@@ -299,9 +303,9 @@ final class FolderTests: XCTestCase {
 
 	func test_construct_section() {
 		let stringElements: [MockStringElement] = [
-			.init(id: "a", element: "A", parentIdentifier: nil, rank: 0), // 0
-			.init(id: "b", element: "B", parentIdentifier: nil, rank: 1), // 1
-			.init(id: "c", element: "C", parentIdentifier: nil, rank: 2), // 2
+			.init(id: "a", element: "A", parentIdentifier: "root", rank: 0), // 0
+			.init(id: "b", element: "B", parentIdentifier: "root", rank: 1), // 1
+			.init(id: "c", element: "C", parentIdentifier: "root", rank: 2), // 2
 			.init(id: "d", element: "D", parentIdentifier: "a", rank: 0), // 3
 			.init(id: "e", element: "E", parentIdentifier: "a", rank: 1), // 4
 			.init(id: "f", element: "F", parentIdentifier: "b", rank: 0), // 5
@@ -334,10 +338,10 @@ final class FolderTests: XCTestCase {
 
 	func test_toggle_section() {
         let stringElements: [MockStringElement] = [
-            .init(id: "a", element: "A", parentIdentifier: nil, rank: 0), // 0
-            .init(id: "b", element: "B", parentIdentifier: nil, rank: 1), // 1
-            .init(id: "c", element: "C", parentIdentifier: nil, rank: 2), // 2
-            .init(id: "d", element: "D", parentIdentifier: nil, rank: 3), // 3
+            .init(id: "a", element: "A", parentIdentifier: "root", rank: 0), // 0
+            .init(id: "b", element: "B", parentIdentifier: "root", rank: 1), // 1
+            .init(id: "c", element: "C", parentIdentifier: "root", rank: 2), // 2
+            .init(id: "d", element: "D", parentIdentifier: "root", rank: 3), // 3
             .init(id: "e", element: "E", parentIdentifier: "a", rank: 0), // 4
             .init(id: "f", element: "F", parentIdentifier: "a", rank: 1), // 5
             .init(id: "g", element: "G", parentIdentifier: "c", rank: 0), // 6
