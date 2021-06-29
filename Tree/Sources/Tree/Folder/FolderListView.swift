@@ -218,7 +218,6 @@ extension FolderListView {
                 }
             } completion: { isFinished in
                 if isFinished {
-//                    self.tableView.reloadData()
                     self.tableView.isUserInteractionEnabled = true
                     completion()
                 }

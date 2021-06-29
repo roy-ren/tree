@@ -45,8 +45,6 @@ extension FolderListViewController: FolderListViewDelegate {
             .init(id: 20, element: 20, parentIdentifier: 2, rank: 0),
             .init(id: 21, element: 21, parentIdentifier: 2, rank: 1),
             .init(id: 211, element: 211, parentIdentifier: 21, rank: 0),
-//            .init(id: 3, element: 3, parentIdentifier: 0, rank: 2),
-//            .init(id: 200, element: 300, parentIdentifier: nil, rank: 1),
         ]
     }
     
