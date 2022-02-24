@@ -35,16 +35,16 @@ class FolderListViewController: UIViewController {
 extension FolderListViewController: FolderListViewDelegate {
     var elements: [Element] {
         [
-            .init(id: 0, element: 0, parentIdentifier: -1, rank: 0),
-            .init(id: 1, element: 1, parentIdentifier: 0, rank: 0),
-            .init(id: 11, element: 11, parentIdentifier: 1, rank: 0),
-            .init(id: 12, element: 12, parentIdentifier: 1, rank: 1),
-            .init(id: 121, element: 121, parentIdentifier: 12, rank: 0),
-            .init(id: 13, element: 13, parentIdentifier: 1, rank: 2),
-            .init(id: 2, element: 2, parentIdentifier: 0, rank: 1),
-            .init(id: 20, element: 20, parentIdentifier: 2, rank: 0),
-            .init(id: 21, element: 21, parentIdentifier: 2, rank: 1),
-            .init(id: 211, element: 211, parentIdentifier: 21, rank: 0),
+            .init(id: 0, element: "R", parentIdentifier: -1, rank: 0),
+            .init(id: 1, element: "a", parentIdentifier: 0, rank: 0),
+            .init(id: 11, element: "a1", parentIdentifier: 1, rank: 0),
+            .init(id: 12, element: "a2", parentIdentifier: 1, rank: 1),
+            .init(id: 121, element: "a2i", parentIdentifier: 12, rank: 0),
+            .init(id: 13, element: "a3", parentIdentifier: 1, rank: 2),
+            .init(id: 2, element: "b", parentIdentifier: 0, rank: 1),
+            .init(id: 20, element: "b1", parentIdentifier: 2, rank: 0),
+            .init(id: 21, element: "b2", parentIdentifier: 2, rank: 1),
+            .init(id: 211, element: "b2i", parentIdentifier: 21, rank: 0),
         ]
     }
     
@@ -120,7 +120,7 @@ extension FolderListViewController {
     
     struct Element: FolderElementConstructable {
         let id: Int
-        let element: Int
+        let element: String
         let parentIdentifier: Int
         let rank: Int
         

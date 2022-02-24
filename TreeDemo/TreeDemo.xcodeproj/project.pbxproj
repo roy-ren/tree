@@ -7,13 +7,13 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		B0159A2E27C73A6600E931B4 /* Tree in Frameworks */ = {isa = PBXBuildFile; productRef = B0159A2D27C73A6600E931B4 /* Tree */; };
 		B041A82D264BB8C000D83377 /* TreeDemoApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = B041A82C264BB8C000D83377 /* TreeDemoApp.swift */; };
 		B041A82F264BB8C000D83377 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B041A82E264BB8C000D83377 /* ContentView.swift */; };
 		B041A831264BB8C200D83377 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B041A830264BB8C200D83377 /* Assets.xcassets */; };
 		B041A834264BB8C200D83377 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B041A833264BB8C200D83377 /* Preview Assets.xcassets */; };
 		B041A83D264BBF8900D83377 /* ViewWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = B041A83C264BBF8900D83377 /* ViewWrapper.swift */; };
 		B041A840264BBFC200D83377 /* FolderListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B041A83F264BBFC200D83377 /* FolderListViewController.swift */; };
-		B041A843264BBFE100D83377 /* Tree in Frameworks */ = {isa = PBXBuildFile; productRef = B041A842264BBFE100D83377 /* Tree */; };
 		B041A846264BC0A900D83377 /* RLayoutKit in Frameworks */ = {isa = PBXBuildFile; productRef = B041A845264BC0A900D83377 /* RLayoutKit */; };
 		B041A848264BCB0700D83377 /* TestFolderViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B041A847264BCB0700D83377 /* TestFolderViewController.swift */; };
 /* End PBXBuildFile section */
@@ -35,8 +35,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B0159A2E27C73A6600E931B4 /* Tree in Frameworks */,
 				B041A846264BC0A900D83377 /* RLayoutKit in Frameworks */,
-				B041A843264BBFE100D83377 /* Tree in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -123,8 +123,8 @@
 			);
 			name = TreeDemo;
 			packageProductDependencies = (
-				B041A842264BBFE100D83377 /* Tree */,
 				B041A845264BC0A900D83377 /* RLayoutKit */,
+				B0159A2D27C73A6600E931B4 /* Tree */,
 			);
 			productName = TreeDemo;
 			productReference = B041A829264BB8C000D83377 /* TreeDemo.app */;
@@ -388,7 +388,7 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		B041A842264BBFE100D83377 /* Tree */ = {
+		B0159A2D27C73A6600E931B4 /* Tree */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = Tree;
 		};
